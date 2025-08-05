@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nossos Vídeos - Família</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: url('assets/imgCapa/img (4).jpg') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            font-family: Arial, sans-serif;
+        }
+        
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Melhorias para a barra superior em dispositivos móveis */
+        @media (max-width: 480px) {
+            .top-bar {
+                height: 44px;
+            }
+            
+            .back-button {
+                padding: 6px 12px;
+                font-size: 15px;
+            }
+        }
+        
+        .back-button {
+            background: none;
+            border: none;
+            color: #000;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Removendo o pseudo-elemento ::before do body que poderia estar bloqueando cliques */
+        /* Em vez disso, adicionamos um fundo escuro diretamente no body */
+        body {
+            background-color: rgba(0, 0, 0, 0.6);
+            background-blend-mode: overlay;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 60px 8px 8px; /* Adiciona padding no topo para acomodar a barra fixa */
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2; /* Garante que os itens de vídeo fiquem acima do pseudo-elemento de sobreposição */
+        }
+        
+        /* Estilos para telas pequenas (mobile) */
+        @media (max-width: 599px) {
+            .video-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+                padding: 50px 6px 6px; /* Ajuste para a barra superior */
+            }
+            
+            .video-item {
+                border-radius: 6px;
+            }
+            
+            .lightbox-content {
+                width: 95%;
+                padding: 0 10px;
+            }
+            
+            .lightbox-prev, .lightbox-next, .lightbox-close {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+            
+            .lightbox-prev {
+                left: 5px;
+            }
+            
+            .lightbox-next {
+                right: 5px;
+            }
+            
+            .lightbox-close {
+                top: 10px;
+                right: 10px;
+            }
+        }
+        
+        /* Estilos para tablets */
+        @media (min-width: 600px) and (max-width: 899px) {
+            .video-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                padding: 60px 10px 10px;
+                max-width: 100%;
+            }
+            
+            .lightbox-content {
+                width: 90%;
+            }
+        }
+        
+        /* Estilos para desktop */
+        @media (min-width: 900px) {
+            .video-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+                padding: 70px 15px 15px;
+                max-width: 1200px;
+            }
+            
+            .lightbox-content {
+                width: 85%;
+                max-width: 1000px;
+            }
+        }
+        
+        .video-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            aspect-ratio: 1; /* Mantém a proporção quadrada */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            background: #000;
+            z-index: 5; /* Garante que os itens de vídeo fiquem acima do fundo */
+            transform: translateZ(0); /* Força aceleração de hardware */
+            -webkit-tap-highlight-color: transparent; /* Remove o destaque ao tocar em dispositivos móveis */
+        }
+        
+        .video-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .video-item:hover .video-thumbnail {
+            opacity: 1;
+        }
+        
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .play-button::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-left: 25px solid #333;
+            border-bottom: 15px solid transparent;
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+                padding: 65px 10px 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .video-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 60px 8px 8px;
+            }
+        }
+        
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000; /* Aumenta o z-index para garantir que fique acima de tudo */
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .lightbox-video {
+            width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Melhorias para o vídeo em dispositivos móveis */
+        @media (max-width: 767px) {
+            .lightbox-video {
+                max-height: 60vh;
+            }
+        }
+        
+        /* Ajuste para orientação retrato em celulares */
+        @media (max-width: 480px) and (orientation: portrait) {
+            .lightbox-video {
+                max-height: 50vh;
+            }
+        }
+        
+        .lightbox-close, .lightbox-prev, .lightbox-next {
+            position: fixed;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.6);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            outline: none;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Melhor feedback visual para toque */
+        .lightbox-close:active, .lightbox-prev:active, .lightbox-next:active {
+            transform: scale(0.95);
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        .lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .lightbox-close {
+            top: 20px;
+            right: 20px;
+        }
+        
+        .lightbox-prev {
+            left: 20px;
+        }
+        
+        .lightbox-next {
+            right: 20px;
+        }
+        
+        .video-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 15px 10px 5px;
+            margin: 0;
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="back-button" onclick="window.location.href='index.html';">
+            <span style="font-size: 20px;">←</span> Voltar
+        </button>
+    </div>
+    
+    <div class="video-grid" id="videoGrid">
+        <!-- Os vídeos serão carregados dinamicamente aqui pelo JavaScript -->
+    </div>
+
+    <!-- Lightbox for Video -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="closeLightbox">&times;</button>
+        <button class="lightbox-prev" id="prevVideo">&#10094;</button>
+        <div class="lightbox-content">
+            <video id="lightboxVideo" class="lightbox-video" controls>
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <button class="lightbox-next" id="nextVideo">&#10095;</button>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let lightbox, lightboxVideo, closeLightbox, prevVideo, nextVideo, videoItems = [];
+        let currentVideoIndex = 0;
+        
+        // Lista de vídeos - será preenchida dinamicamente
+        const videoFiles = [
+            'vid (1).mp4',
+            'vid (2).mp4',
+            'vid (3).mp4',
+            'vid (4).mp4',
+            'vid (5).mp4',
+            'vid (6).mp4',
+            'vid (7).mp4'
+        ];
+
+        function createVideoItems() {
+            return new Promise((resolve) => {
+                const videoGrid = document.getElementById('videoGrid');
+                if (!videoGrid) {
+                    console.error('Elemento videoGrid não encontrado!');
+                    return resolve();
+                }
+                videoGrid.innerHTML = '';
+            
+            // Ordena os vídeos numericamente
+            const sortedVideos = [...videoFiles].sort((a, b) => {
+                const numA = parseInt(a.match(/\d+/)[0]);
+                const numB = parseInt(b.match(/\d+/)[0]);
+                return numA - numB;
+            });
+
+            sortedVideos.forEach((videoFile, index) => {
+                const videoItem = document.createElement('div');
+                videoItem.className = 'video-item';
+                videoItem.setAttribute('data-video', `assets/videos/${videoFile}`);
+                
+                // Estilos do item de vídeo
+                Object.assign(videoItem.style, {
+                    cursor: 'pointer',
+                    position: 'relative',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    backgroundColor: '#333',
+                    transition: 'transform 0.2s',
+                    aspectRatio: '1',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    border: '2px solid #444'
+                });
+
+                // Efeito hover
+                videoItem.addEventListener('mouseenter', () => {
+                    videoItem.style.transform = 'scale(0.98)';
+                    videoItem.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+                });
+                
+                videoItem.addEventListener('mouseleave', () => {
+                    videoItem.style.transform = 'scale(1)';
+                    videoItem.style.boxShadow = 'none';
+                });
+
+                // Container do vídeo
+                const videoContainer = document.createElement('div');
+                videoContainer.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
+                
+                // Elemento de vídeo
+                const video = document.createElement('video');
+                video.src = `assets/videos/${videoFile}`;
+                video.muted = true;
+                video.loop = true;
+                video.style.cssText = 'width:100%; height:100%; object-fit:cover;';
+
+                // Tenta reproduzir o vídeo
+                video.play().catch(console.log);
+                
+                // Overlay com ícone de play
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); display:flex; justify-content:center; align-items:center;';
+                
+                const playIcon = document.createElement('div');
+                playIcon.innerHTML = '▶';
+                playIcon.style.cssText = 'color:white; font-size:30px; background:rgba(0,0,0,0.6); width:50px; height:50px; border-radius:50%; display:flex; justify-content:center; align-items:center;';
+                
+                overlay.appendChild(playIcon);
+                
+                // Título do vídeo
+                const title = document.createElement('div');
+                title.textContent = `Vídeo ${index + 1}`;
+                title.style.cssText = 'padding:10px 5px; color:#fff; text-align:center; background:#1a1a1a; font-size:0.9em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
+                
+                // Monta a estrutura
+                videoContainer.appendChild(video);
+                videoContainer.appendChild(overlay);
+                videoItem.appendChild(videoContainer);
+                videoItem.appendChild(title);
+                
+                // Evento de clique melhorado
+                const handleVideoClick = (e) => {
+                    console.log('Clique no item de vídeo detectado');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Atualiza o índice do vídeo atual
+                    const clickedIndex = Array.from(videoGrid.children).indexOf(videoItem);
+                    currentVideoIndex = clickedIndex;
+                    console.log('Índice do vídeo clicado:', currentVideoIndex);
+                    
+                    // Abre o vídeo
+                    try {
+                        openVideo(videoItem);
+                    } catch (error) {
+                        console.error('Erro ao abrir o vídeo:', error);
+                    }
+                };
+                
+                // Adiciona o evento de clique
+                videoItem.addEventListener('click', handleVideoClick, false);
+                
+                // Adiciona um estilo de cursor para indicar que é clicável
+                videoItem.style.cursor = 'pointer';
+                
+                videoGrid.appendChild(videoItem);
+            });
+            
+                // Resolve a Promise quando todos os itens forem criados
+                resolve();
+            });
+        }
+
+        // Inicializa o lightbox
+        function initializeLightbox() {
+            lightbox = document.getElementById('lightbox');
+            lightboxVideo = document.getElementById('lightboxVideo');
+            closeLightbox = document.getElementById('closeLightbox');
+            prevVideo = document.getElementById('prevVideo');
+            nextVideo = document.getElementById('nextVideo');
+            
+            if (!lightbox || !lightboxVideo || !closeLightbox || !prevVideo || !nextVideo) {
+                console.error('Elementos do lightbox não encontrados!');
+                return;
+            }
+            
+            // Configura o vídeo para não ter controles nativos
+            lightboxVideo.controls = true;
+            
+            // Event listeners
+            closeLightbox.addEventListener('click', closeVideo);
+            prevVideo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateVideos(-1);
+            });
+            nextVideo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateVideos(1);
+            });
+            
+            // Fecha ao clicar fora do vídeo
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeVideo();
+            });
+            
+            // Navegação por teclado
+            document.addEventListener('keydown', handleKeyDown);
+        }
+        
+        // Função para lidar com eventos de teclado
+        function handleKeyDown(e) {
+            if (!lightbox.classList.contains('active')) return;
+            
+            switch (e.key) {
+                case 'Escape':
+                    closeVideo();
+                    break;
+                case 'ArrowLeft':
+                    navigateVideos(-1);
+                    break;
+                case 'ArrowRight':
+                    navigateVideos(1);
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    if (lightboxVideo.paused) {
+                        lightboxVideo.play();
+                    } else {
+                        lightboxVideo.pause();
+                    }
+                    break;
+            }
+        }
+        
+        // Abre o vídeo no lightbox
+        function openVideo(videoItem) {
+            console.log('Abrindo vídeo...');
+            
+            if (!videoItem) {
+                console.error('Item de vídeo não fornecido');
+                return;
+            }
+            
+            if (!lightbox) {
+                console.error('Elemento lightbox não encontrado');
+                return;
+            }
+            
+            if (!lightboxVideo) {
+                console.error('Elemento lightboxVideo não encontrado');
+                return;
+            }
+            
+            const videoSrc = videoItem.getAttribute('data-video');
+            if (!videoSrc) {
+                console.error('Atributo data-video não encontrado no item');
+                return;
+            }
+            
+            console.log('Abrindo vídeo com src:', videoSrc);
+            
+            try {
+                // Atualiza o índice atual
+                currentVideoIndex = videoItems.indexOf(videoItem);
+                console.log('Índice do vídeo atual:', currentVideoIndex);
+                
+                // Atualiza a fonte do vídeo
+                lightboxVideo.src = videoSrc;
+                lightboxVideo.load(); // Garante que o vídeo seja carregado
+                
+                // Mostra o lightbox
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                console.log('Lightbox ativado, tentando reproduzir...');
+                
+                // Tenta reproduzir o vídeo
+                const playPromise = lightboxVideo.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log('Vídeo está sendo reproduzido');
+                    }).catch(error => {
+                        console.error('Erro ao reproduzir o vídeo:', error);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao abrir o vídeo:', error);
+            }
+        }
+        
+        // Fecha o lightbox
+        function closeVideo() {
+            if (!lightbox || !lightboxVideo) return;
+            
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Pausa o vídeo e reseta o tempo
+            lightboxVideo.pause();
+            lightboxVideo.currentTime = 0;
+            
+            // Limpa a fonte do vídeo para liberar recursos
+            setTimeout(() => {
+                lightboxVideo.src = '';
+            }, 300);
+        }
+        
+        // Navega entre os vídeos
+        function navigateVideos(direction) {
+            currentVideoIndex = (currentVideoIndex + direction + videoItems.length) % videoItems.length;
+            openVideo(videoItems[currentVideoIndex]);
+        }
+        
+        // Inicializa a galeria quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM carregado, inicializando galeria...');
+            
+            // Primeiro inicializa o lightbox
+            try {
+                initializeLightbox();
+                console.log('Lightbox inicializado com sucesso');
+            } catch (error) {
+                console.error('Erro ao inicializar o lightbox:', error);
+            }
+            
+            // Depois cria os itens de vídeo
+            createVideoItems().then(() => {
+                // Depois que os itens forem criados, atualiza a lista de vídeos
+                videoItems = Array.from(document.querySelectorAll('.video-item'));
+                console.log('Vídeos carregados:', videoItems.length);
+                
+                // Adiciona evento de clique global para depuração
+                document.addEventListener('click', (e) => {
+                    console.log('Clique global detectado em:', e.target);
+                }, { capture: true });
+                
+            }).catch(error => {
+                console.error('Erro ao criar itens de vídeo:', error);
+            });
+        });
+    </script>
+</body>
+</html>

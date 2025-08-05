@@ -1,0 +1,235 @@
+/* Tema Elegante - Atualização de Cores e Tipografia */
+
+/* Paleta de Cores Sofisticada */
+:root {
+    --primary-color: #2c3e50;       /* Azul escuro elegante */
+    --secondary-color: #8b5a2b;     /* Marrom dourado */
+    --accent-color: #c0a080;        /* Dourado claro */
+    --text-color: #333333;          /* Preto suave */
+    --light-bg: #f8f5f0;           /* Bege claro */
+    --white: #ffffff;               /* Branco puro */
+    --gold-gradient: linear-gradient(135deg, #c0a080 0%, #8b5a2b 100%);
+    --transition: all 0.3s ease;
+}
+
+/* Tipografia Elegante */
+body {
+    font-family: 'Playfair Display', serif;
+    color: var(--text-color);
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+    background-color: var(--light-bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+}
+
+/* Header Estilizado */
+.header {
+    background-color: var(--primary-color);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.2rem 2rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+.site-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Menu Lateral Elegante */
+.sidebar {
+    background-color: var(--white);
+    box-shadow: 3px 0 30px rgba(0, 0, 0, 0.08);
+    border-right: none;
+}
+
+.sidebar .logo {
+    max-width: 120px;
+    margin: 0 auto 1rem;
+    filter: brightness(0.9);
+}
+
+.slogan {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--secondary-color);
+    font-size: 1rem;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+}
+
+.topbar {
+    background: var(--gold-gradient);
+    color: white;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    padding: 0.8rem;
+    margin: 1.5rem 0;
+    border-radius: 0;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+/* Navegação Estilizada */
+.nav-link {
+    color: var(--text-color);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    padding: 0.8rem 1.2rem;
+    margin: 0.3rem 0;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+    background-color: rgba(192, 160, 128, 0.1);
+    color: var(--secondary-color);
+    border-left: 3px solid var(--accent-color);
+    transform: translateX(5px);
+}
+
+.nav-icon {
+    font-size: 1.2rem;
+    margin-right: 0.8rem;
+    color: var(--accent-color);
+}
+
+/* Botão de Menu */
+.menu-toggle {
+    background: transparent !important;
+    border: none !important;
+    color: var(--white);
+    transition: var(--transition);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    box-shadow: none !important;
+}
+
+.menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: scale(1.1);
+    border-radius: 4px;
+}
+
+/* Texto Fixo Elegante */
+.corner-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--white);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    background: rgba(44, 62, 80, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem 2rem;
+    border-radius: 0;
+    letter-spacing: 1px;
+    line-height: 1.4;
+    transition: var(--transition);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    .site-title {
+        font-size: 1.6rem;
+        padding-left: 1rem;
+    }
+    
+    .menu-toggle {
+        margin-right: 0.5rem;
+    }
+    
+    .corner-text {
+        font-size: 1.8rem;
+        padding: 1.2rem 1.5rem;
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+        text-align: center;
+    }
+    
+    .nav-link {
+        font-size: 1.05rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    .slogan {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .topbar {
+        font-size: 0.85rem;
+        padding: 0.7rem;
+        margin: 1.2rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-title {
+        font-size: 1.4rem;
+    }
+    
+    .corner-text {
+        font-size: 1.5rem;
+        padding: 1rem 1.2rem;
+        bottom: 1rem;
+    }
+    
+    .nav-link {
+        font-size: 1rem;
+    }
+    
+    .slogan {
+        font-size: 0.9rem;
+    }
+}
+
+/* Efeitos de Hover Suaves */
+a, button {
+    transition: var(--transition);
+}
+
+a:hover {
+    text-decoration: none;
+    opacity: 0.9;
+}
+
+/* Melhorias na Legibilidade */
+p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* Botão de Fechar Estilizado */
+.close-menu {
+    color: var(--secondary-color);
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.close-menu:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+}
